@@ -1,6 +1,8 @@
-# %% day1
+# %% day0
 import pandas as pd
-
+import os
+os.chdir("/home/joey/test/AoC2021")
+# %% day1
 day1_input = "day1/day1.txt"
 d1_df = pd.read_csv(day1_input, header=None)
 depths = d1_df[0].to_list()
@@ -55,3 +57,65 @@ d2p1_answer = d2p1_solve(d2_df)
 d2p2_answer = d2p2_solve(d2_df)
 print("Day2 Puzzle1: {}\nDay2 Puzzle2: {}".format(d2p1_answer, d2p2_answer))
 # %% day3
+day3_input = "day3/day3.txt"
+def d3p1_solve(input) -> int:
+    with open(input) as f:
+        submarine = f.read().splitlines()
+    cols = []
+    nrow = len(submarine)
+    for i in range(len(submarine[0])):
+        l = [int(j[i]) for j in submarine]
+        if sum(l) > (nrow / 2):
+            most, least = "1", "0"
+        else:
+            most, least = "0", "1"
+        cols.append((most, least))
+    gamma = int("".join([i[0] for i in cols]), 2)
+    epsilon = int("".join([i[1] for i in cols]), 2)
+    return gamma * epsilon
+def d3p2_solve(input) -> int:
+    with open(input) as f:
+        submarine = f.read().splitlines()
+    cols = []
+    nrow = len(submarine)
+    def find_oxygen(submarine, idx) -> int:
+        zero, one = [], []
+        for i in submarine:
+            if i[idx] == "0":
+                zero.append(i)
+            else:
+                one.append(i)
+        if len(one) >= len(zero):
+            if len(one) > 1:
+                return find_oxygen(one, idx + 1)
+            else:
+                return int(one[0], 2)
+        else:
+            if len(zero) > 1:
+                return find_oxygen(zero, idx + 1)
+            else:
+                return int(zero[0], 2)
+    def find_co2(submarine, idx) -> int:
+        zero, one = [], []
+        for i in submarine:
+            if i[idx] == "0":
+                zero.append(i)
+            else:
+                one.append(i)
+        if len(one) >= len(zero):
+            if len(zero) > 1:
+                return find_co2(zero, idx + 1)
+            else:
+                return int(zero[0], 2)
+        else:
+            if len(one) > 1:
+                return find_co2(one, idx + 1)
+            else:
+                return int(one[0], 2)
+    oxygen = find_oxygen(submarine, 0)
+    co2 = find_co2(submarine, 0)
+    print(oxygen, co2)
+    return oxygen * co2 
+d3p1_answer = d3p1_solve(day3_input)
+d3p2_answer = d3p2_solve(day3_input)
+# %% day4
